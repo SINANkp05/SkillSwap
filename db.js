@@ -34,140 +34,137 @@ initDB();
 
 module.exports = db;
 
-function initDB() {
-    db.serialize(() => {
-        // Users table
-        db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            first_name TEXT,
-            last_name TEXT,
-            email TEXT UNIQUE,
-            password TEXT,
-            title TEXT,
-            avatar TEXT,
-            offers TEXT,
-            needs TEXT,
-            description TEXT,
-            type TEXT,
-            score INTEGER DEFAULT 0,
-            portfolio_links TEXT DEFAULT '[]',
-            profile_views INTEGER DEFAULT 0
-        )`, (err) => { if (err) console.error('users table error:', err.message); });
+async function initDB() {
+    try {
+        await db.execute("PRAGMA foreign_keys = ON");
 
-        // Swaps table
-        db.run(`CREATE TABLE IF NOT EXISTS swaps (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            requester_id INTEGER,
-            receiver_id INTEGER,
-            status TEXT DEFAULT 'pending',
-            requester_completed INTEGER DEFAULT 0,
-            receiver_completed INTEGER DEFAULT 0,
-            points_awarded INTEGER DEFAULT 0,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(requester_id) REFERENCES users(id),
-            FOREIGN KEY(receiver_id) REFERENCES users(id)
-        )`, (err) => { if (err) console.error('swaps table error:', err.message); });
+        // Execute table creations one by one
+        const tables = [
+            `CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                first_name TEXT,
+                last_name TEXT,
+                email TEXT UNIQUE,
+                password TEXT,
+                title TEXT,
+                avatar TEXT,
+                offers TEXT,
+                needs TEXT,
+                description TEXT,
+                type TEXT,
+                score INTEGER DEFAULT 0,
+                portfolio_links TEXT DEFAULT '[]',
+                profile_views INTEGER DEFAULT 0
+            )`,
+            `CREATE TABLE IF NOT EXISTS swaps (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                requester_id INTEGER,
+                receiver_id INTEGER,
+                status TEXT DEFAULT 'pending',
+                requester_completed INTEGER DEFAULT 0,
+                receiver_completed INTEGER DEFAULT 0,
+                points_awarded INTEGER DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(requester_id) REFERENCES users(id),
+                FOREIGN KEY(receiver_id) REFERENCES users(id)
+            )`,
+            `CREATE TABLE IF NOT EXISTS messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                swap_id INTEGER,
+                sender_id INTEGER,
+                text TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(swap_id) REFERENCES swaps(id),
+                FOREIGN KEY(sender_id) REFERENCES users(id)
+            )`,
+            `CREATE TABLE IF NOT EXISTS posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                content TEXT,
+                image_url TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )`,
+             `CREATE TABLE IF NOT EXISTS likes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER,
+                user_id INTEGER,
+                FOREIGN KEY(post_id) REFERENCES posts(id),
+                FOREIGN KEY(user_id) REFERENCES users(id),
+                UNIQUE(post_id, user_id)
+            )`,
+            `CREATE TABLE IF NOT EXISTS comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER,
+                user_id INTEGER,
+                content TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(post_id) REFERENCES posts(id),
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )`,
+            `CREATE TABLE IF NOT EXISTS comment_likes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                comment_id INTEGER,
+                user_id INTEGER,
+                FOREIGN KEY(comment_id) REFERENCES comments(id),
+                FOREIGN KEY(user_id) REFERENCES users(id),
+                UNIQUE(comment_id, user_id)
+            )`,
+             `CREATE TABLE IF NOT EXISTS post_hashtags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER,
+                hashtag TEXT,
+                FOREIGN KEY(post_id) REFERENCES posts(id)
+            )`,
+            `CREATE TABLE IF NOT EXISTS notifications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                type TEXT NOT NULL,
+                message TEXT NOT NULL,
+                link TEXT,
+                is_read INTEGER DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )`,
+            `CREATE TABLE IF NOT EXISTS ratings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                swap_id INTEGER NOT NULL,
+                rater_id INTEGER NOT NULL,
+                ratee_id INTEGER NOT NULL,
+                stars INTEGER NOT NULL CHECK(stars >= 1 AND stars <= 5),
+                review TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(swap_id) REFERENCES swaps(id),
+                FOREIGN KEY(rater_id) REFERENCES users(id),
+                FOREIGN KEY(ratee_id) REFERENCES users(id),
+                UNIQUE(swap_id, rater_id)
+            )`
+        ];
 
-        // Messages table
-        db.run(`CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            swap_id INTEGER,
-            sender_id INTEGER,
-            text TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(swap_id) REFERENCES swaps(id),
-            FOREIGN KEY(sender_id) REFERENCES users(id)
-        )`, (err) => { if (err) console.error('messages table error:', err.message); });
-
-        // Posts table
-        db.run(`CREATE TABLE IF NOT EXISTS posts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            content TEXT,
-            image_url TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        )`, (err) => { if (err) console.error('posts table error:', err.message); });
-
-        // Likes table
-        db.run(`CREATE TABLE IF NOT EXISTS likes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            post_id INTEGER,
-            user_id INTEGER,
-            FOREIGN KEY(post_id) REFERENCES posts(id),
-            FOREIGN KEY(user_id) REFERENCES users(id),
-            UNIQUE(post_id, user_id)
-        )`, (err) => { if (err) console.error('likes table error:', err.message); });
-
-        // Comments table
-        db.run(`CREATE TABLE IF NOT EXISTS comments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            post_id INTEGER,
-            user_id INTEGER,
-            content TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(post_id) REFERENCES posts(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        )`, (err) => { if (err) console.error('comments table error:', err.message); });
-
-        // Comment Likes table
-        db.run(`CREATE TABLE IF NOT EXISTS comment_likes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            comment_id INTEGER,
-            user_id INTEGER,
-            FOREIGN KEY(comment_id) REFERENCES comments(id),
-            FOREIGN KEY(user_id) REFERENCES users(id),
-            UNIQUE(comment_id, user_id)
-        )`, (err) => { if (err) console.error('comment_likes table error:', err.message); });
-
-        // Post Hashtags table
-        db.run(`CREATE TABLE IF NOT EXISTS post_hashtags (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            post_id INTEGER,
-            hashtag TEXT,
-            FOREIGN KEY(post_id) REFERENCES posts(id)
-        )`, (err) => { if (err) console.error('post_hashtags table error:', err.message); });
-
-        // Notifications table
-        db.run(`CREATE TABLE IF NOT EXISTS notifications (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            type TEXT NOT NULL,
-            message TEXT NOT NULL,
-            link TEXT,
-            is_read INTEGER DEFAULT 0,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        )`, (err) => { if (err) console.error('notifications table error:', err.message); });
-
-        // Ratings table
-        db.run(`CREATE TABLE IF NOT EXISTS ratings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            swap_id INTEGER NOT NULL,
-            rater_id INTEGER NOT NULL,
-            ratee_id INTEGER NOT NULL,
-            stars INTEGER NOT NULL CHECK(stars >= 1 AND stars <= 5),
-            review TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(swap_id) REFERENCES swaps(id),
-            FOREIGN KEY(rater_id) REFERENCES users(id),
-            FOREIGN KEY(ratee_id) REFERENCES users(id),
-            UNIQUE(swap_id, rater_id)
-        )`, (err) => { if (err) console.error('ratings table error:', err.message); });
+        for (let sql of tables) {
+            await db.execute(sql);
+        }
 
         // Add new columns to existing tables if they don't exist (safe migrations)
-        db.run(`ALTER TABLE users ADD COLUMN portfolio_links TEXT DEFAULT '[]'`, () => {});
-        db.run(`ALTER TABLE users ADD COLUMN profile_views INTEGER DEFAULT 0`, () => {});
+        try { await db.execute(`ALTER TABLE users ADD COLUMN portfolio_links TEXT DEFAULT '[]'`); } catch (e) {}
+        try { await db.execute(`ALTER TABLE users ADD COLUMN profile_views INTEGER DEFAULT 0`); } catch (e) {}
 
+        console.log("Database tables initialized successfully!");
+        
         // Seed after tables are ready
         setTimeout(seedDatabase, 500);
-    });
+
+    } catch (err) {
+        console.error("Error setting up database:", err);
+    }
 }
 
 async function seedDatabase() {
-    db.get("SELECT count(*) as count FROM users", async (err, row) => {
-        if (err) { console.error(err.message); return; }
-        if (row.count === 0) {
+    try {
+        const result = await db.execute("SELECT count(*) as count FROM users");
+        const count = result.rows[0].count;
+        
+        if (count === 0) {
             console.log('Seeding database with initial users...');
             const defaultPassword = await bcrypt.hash('password123', 10);
 
@@ -222,14 +219,19 @@ async function seedDatabase() {
                 }
             ];
 
-            const stmt = db.prepare(`INSERT INTO users (first_name, last_name, email, password, title, avatar, offers, needs, description, type, score, portfolio_links) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-            usersData.forEach(u => {
-                stmt.run(u.first_name, u.last_name, u.email, defaultPassword, u.title, u.avatar, u.offers, u.needs, u.description, u.type, u.score || 0, u.portfolio_links || '[]');
-            });
-            stmt.finalize();
+            const sql = `INSERT INTO users (first_name, last_name, email, password, title, avatar, offers, needs, description, type, score, portfolio_links) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            
+            for (let u of usersData) {
+                await db.execute({
+                    sql: sql,
+                    args: [u.first_name, u.last_name, u.email, defaultPassword, u.title, u.avatar, u.offers, u.needs, u.description, u.type, u.score || 0, u.portfolio_links || '[]']
+                });
+            }
             console.log('Database seeded automatically.');
         }
-    });
+    } catch(err) {
+        console.error(err.message);
+    }
 }
 
 module.exports = db;
