@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Notifications | SkillSwap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .notifications-container {
+            max-width: 800px;
+            margin: 120px auto 4rem;
+            padding: 0 20px;
+        }
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notif-header h1 {
+            font-size: 2rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mark-all-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mark-all-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .notif-list-full {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .notif-item-full {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+        
+        .notif-item-full:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .notif-item-full.unread {
+            background: rgba(var(--primary-rgb, 69, 162, 158), 0.1);
+            border-color: rgba(var(--primary-rgb, 69, 162, 158), 0.3);
+        }
+
+        .notif-icon-full {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .notif-content-full {
+            flex: 1;
+        }
+
+        .notif-message-full {
+            color: white;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+
+        .notif-time-full {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        /* Icon Colors */
+        .notif-icon-full.swap_request { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .notif-icon-full.swap_accept { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .notif-icon-full.swap_complete { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .notif-icon-full.like { background: rgba(244, 63, 94, 0.2); color: #f43f5e; }
+        .notif-icon-full.comment { background: rgba(69, 162, 158, 0.2); color: var(--primary); }
+        .notif-icon-full.rating { background: rgba(250, 204, 21, 0.2); color: #facc15; }
+        .notif-icon-full.default { background: rgba(255, 255, 255, 0.1); color: white; }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <header class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-people-arrows"></i> Skill<span>Swap</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="index.html#discover">Discover</a>
+            </nav>
+            <div class="nav-actions" id="navAuthArea">
+                <!-- Dynamically populated by app.js -->
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <main class="notifications-container fade-in">
+        <div class="notif-header glass-panel">
+            <h1><i class="fa-solid fa-bell" style="color: var(--primary);"></i> Your Notifications</h1>
+            <button class="mark-all-btn" id="markAllPageBtn">
+                <i class="fa-solid fa-check-double"></i> Mark All as Read
+            </button>
+        </div>
+
+        <div class="notif-list-full" id="fullNotifList">
+            <div style="text-align: center; padding: 3rem;">
+                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--primary);"></i>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loggedInUser = JSON.parse(localStorage.getItem('user'));
+            if (!loggedInUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const listContainer = document.getElementById('fullNotifList');
+            const markAllBtn = document.getElementById('markAllPageBtn');
+            
+            // Define icon mapping identical to app.js
+            const iconMap = {
+                'swap_request': 'fa-handshake',
+                'swap_accept': 'fa-check-circle',
+                'swap_complete': 'fa-star',
+                'like': 'fa-heart',
+                'comment': 'fa-comment',
+                'rating': 'fa-star-half-stroke'
+            };
+
+            async function loadFullNotifications() {
+                try {
+                    const res = await fetch(`/api/notifications/${loggedInUser.id}`);
+                    const notifications = await res.json();
+
+                    if (notifications.length === 0) {
+                        listContainer.innerHTML = `
+                            <div class="empty-state glass-panel">
+                                <i class="fa-regular fa-bell-slash"></i>
+                                <h3>You're all caught up!</h3>
+                                <p>No new notifications to show right now.</p>
+                                <a href="dashboard.html" class="btn btn-secondary" style="margin-top: 1rem; display: inline-block;">Back to Dashboard</a>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    listContainer.innerHTML = notifications.map(n => {
+                        const iconClass = iconMap[n.type] || 'fa-bell';
+                        const typeClass = iconMap[n.type] ? n.type : 'default';
+                        
+                        // Parse the relative link or default to #
+                        let linkHref = '#';
+                        if (n.link) {
+                            linkHref = n.link;
+                        }
+
+                        // Determine time difference
+                        const notifDate = new Date(n.created_at);
+                        const now = new Date();
+                        const diffMs = now - notifDate;
+                        const diffMins = Math.floor(diffMs / 60000);
+                        const diffHours = Math.floor(diffMins / 60);
+                        const diffDays = Math.floor(diffHours / 24);
+                        
+                        let timeStr = '';
+                        if (diffDays > 0) timeStr = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+                        else if (diffHours > 0) timeStr = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                        else if (diffMins > 0) timeStr = `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+                        else timeStr = 'Just now';
+
+                        return `
+                            <a href="${linkHref}" class="notif-item-full ${n.is_read ? '' : 'unread'}">
+                                <div class="notif-icon-full ${typeClass}">
+                                    <i class="fa-solid ${iconClass}"></i>
+                                </div>
+                                <div class="notif-content-full">
+                                    <p class="notif-message-full">${n.message}</p>
+                                    <span class="notif-time-full">${timeStr}</span>
+                                </div>
+                                ${!n.is_read ? '<i class="fa-solid fa-circle" style="color: var(--primary); font-size: 0.6rem; margin-top: 5px;"></i>' : ''}
+                            </a>
+                        `;
+                    }).join('');
+                } catch (err) {
+                    listContainer.innerHTML = '<p class="text-muted text-center" style="padding: 2rem;">Error loading notifications.</p>';
+                }
+            }
+
+            markAllBtn.addEventListener('click', async () => {
+                const originalHtml = markAllBtn.innerHTML;
+                markAllBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+                
+                try {
+                    await fetch('/api/notifications/read-all', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: loggedInUser.id })
+                    });
+                    
+                    // Reload list and update global badge
+                    await loadFullNotifications();
+                    if (typeof updateNotificationBadge === 'function') {
+                        updateNotificationBadge();
+                    }
+                } catch (err) {
+                    if (typeof showToast !== 'undefined') showToast("Failed to mark all as read", "error");
+                } finally {
+                    markAllBtn.innerHTML = originalHtml;
+                }
+            });
+
+            loadFullNotifications();
+        });
+        
+        // Ensure alert styling consistency
+        window.alert = function(msg) {
+            if (typeof showToast !== 'undefined') showToast(msg, 'warning');
+            else console.log("Alert:", msg);
+        };
+    </script>
+    <div id="toast-container"></div>
+</body>
+
+</html>

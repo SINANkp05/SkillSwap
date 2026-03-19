@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Chat | SkillSwap</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .chat-frame {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            background-color: var(--bg-base);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex: 1;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .chat-user-info h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            position: relative;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-received {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-sent {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), #66FCF1);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(var(--accent-glow), 0.2);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: block;
+            text-align: right;
+        }
+
+        .message-sent .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .chat-input-area {
+            padding: 1rem 1.5rem;
+            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .chat-input-wrapper {
+            flex: 1;
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            padding: 4px 16px;
+            align-items: center;
+        }
+
+        .chat-input-wrapper input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            padding: 8px 0;
+            outline: none;
+            font-family: var(--font-body);
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Emoji Picker */
+        .emoji-picker {
+            position: absolute;
+            bottom: calc(100% + 15px);
+            left: 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 100;
+        }
+        .emoji-picker.visible {
+            display: grid;
+        }
+        .emoji-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            padding: 4px;
+        }
+        .emoji-btn:hover {
+            transform: scale(1.2);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 0.8rem 1.2rem;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            display: none;
+            gap: 5px;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-frame">
+        <header class="chat-header">
+            <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+            <div class="chat-user-info">
+                <img id="otherUserAvatar" src="https://i.pravatar.cc/100" alt="Avatar" class="chat-avatar">
+                <div style="display: flex; flex-direction: column;">
+                    <h4 id="otherUserName">Loading...</h4>
+                    <span style="font-size: 0.75rem; color: #10b981;"><i class="fa-solid fa-circle"
+                            style="font-size: 0.5rem; vertical-align: middle;"></i> Online</span>
+                </div>
+            </div>
+            <div class="chat-actions">
+                <i class="fa-solid fa-ellipsis-vertical" style="color: var(--text-muted); cursor: pointer;"></i>
+            </div>
+        </header>
+
+        <main class="chat-messages" id="chatMessages">
+            <!-- Messages injected here -->
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+                <i class="fa-solid fa-lock" style="margin-right: 5px;"></i> Messages are professionally secured
+            </div>
+        </main>
+
+        <form class="chat-input-area" id="chatForm" style="position: relative;">
+            <!-- Emoji Picker -->
+            <div class="emoji-picker" id="emojiPicker">
+                <button type="button" class="emoji-btn">👍</button>
+                <button type="button" class="emoji-btn">❤️</button>
+                <button type="button" class="emoji-btn">😂</button>
+                <button type="button" class="emoji-btn">🔥</button>
+                <button type="button" class="emoji-btn">🤝</button>
+                <button type="button" class="emoji-btn">🙌</button>
+                <button type="button" class="emoji-btn">🎉</button>
+                <button type="button" class="emoji-btn">✅</button>
+                <button type="button" class="emoji-btn">🚀</button>
+                <button type="button" class="emoji-btn">💡</button>
+            </div>
+            
+            <button type="button" id="toggleEmojiBtn" style="background:none; border:none; color:var(--text-muted); font-size:1.4rem; cursor:pointer; margin-right:5px; transition:color 0.2s;">
+                <i class="fa-regular fa-face-smile"></i>
+            </button>
+
+            <div class="chat-input-wrapper">
+                <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off">
+            </div>
+            <button type="submit" class="send-btn">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+
+</html>

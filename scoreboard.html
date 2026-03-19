@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Scoreboard | SkillSwap</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .scoreboard-hero {
+            padding-top: 120px;
+            padding-bottom: 2rem;
+            text-align: center;
+        }
+
+        .leaderboard-container {
+            max-width: 900px;
+            margin: 0 auto 4rem;
+        }
+
+        .ranks-guide {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .rank-card {
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 3px solid;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .rank-card i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .rank-card.novice {
+            border-color: #94a3b8;
+            color: #94a3b8;
+        }
+
+        .rank-card.apprentice {
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .rank-card.adept {
+            border-color: #14b8a6;
+            color: #14b8a6;
+        }
+
+        .rank-card.expert {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .rank-card.master {
+            border-color: #45A29E;
+            color: #45A29E;
+        }
+
+        .rank-card.grandmaster {
+            border-color: #ec4899;
+            color: #ec4899;
+        }
+
+        .rank-card.legend {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .rank-card.mythic {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .rank-card.novice:hover {
+            box-shadow: 0 10px 30px rgba(148, 163, 184, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rank-card.apprentice:hover {
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rank-card.adept:hover {
+            box-shadow: 0 10px 30px rgba(20, 184, 166, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rank-card.expert:hover {
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rank-card.master:hover {
+            box-shadow: 0 10px 30px rgba(69, 162, 158, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rank-card.grandmaster:hover {
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rank-card.legend:hover {
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rank-card.mythic:hover {
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rank-card h4 {
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .rank-card p {
+            font-size: 0.85rem;
+        }
+
+        /* Leaderboard List */
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .leader-position {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            color: var(--text-muted);
+            width: 40px;
+            text-align: center;
+        }
+
+        .leader-top-3 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #fcd34d, #f59e0b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .leader-item-2 .leader-position {
+            background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .leader-item-3 .leader-position {
+            background: linear-gradient(135deg, #fed7aa, #ea580c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .leader-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .leader-info {
+            flex: 1;
+        }
+
+        .leader-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: var(--font-heading);
+            color: white;
+        }
+
+        .leader-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .leader-score span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <header class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-people-arrows"></i> Skill<span>Swap</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="scoreboard.html" class="active">Scoreboard</a>
+            </nav>
+            <div class="nav-actions" id="navAuthArea">
+                <!-- Dynamically populated -->
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <main class="fade-in">
+        <section class="scoreboard-hero">
+            <div class="badge">🏆 Top Swappers</div>
+            <h1 class="hero-title">Hall of <span class="gradient-text">Fame</span></h1>
+            <p class="hero-subtitle" style="margin: 0 auto;">Connect with others and solve problems to increase your
+                score and climb the ranks.</p>
+        </section>
+
+        <section class="leaderboard-container">
+            <div class="section-header" style="margin-bottom: 2rem;">
+                <h2>The Eight <span class="gradient-text">Themes</span></h2>
+            </div>
+
+            <div class="ranks-guide">
+                <div class="rank-card glass-panel novice">
+                    <i class="fa-solid fa-seedling"></i>
+                    <h4>Novice</h4>
+                    <p>0 - 19 pts</p>
+                </div>
+                <div class="rank-card glass-panel apprentice">
+                    <i class="fa-solid fa-leaf"></i>
+                    <h4>Apprentice</h4>
+                    <p>20 - 39 pts</p>
+                </div>
+                <div class="rank-card glass-panel adept">
+                    <i class="fa-solid fa-book"></i>
+                    <h4>Adept</h4>
+                    <p>40 - 59 pts</p>
+                </div>
+                <div class="rank-card glass-panel expert">
+                    <i class="fa-solid fa-hat-wizard"></i>
+                    <h4>Expert</h4>
+                    <p>60 - 79 pts</p>
+                </div>
+                <div class="rank-card glass-panel master">
+                    <i class="fa-solid fa-medal"></i>
+                    <h4>Master</h4>
+                    <p>80 - 99 pts</p>
+                </div>
+                <div class="rank-card glass-panel grandmaster">
+                    <i class="fa-solid fa-crown"></i>
+                    <h4>Grandmaster</h4>
+                    <p>100 - 149 pts</p>
+                </div>
+                <div class="rank-card glass-panel legend">
+                    <i class="fa-solid fa-gem"></i>
+                    <h4>Legend</h4>
+                    <p>150 - 199 pts</p>
+                </div>
+                <div class="rank-card glass-panel mythic">
+                    <i class="fa-solid fa-fire"></i>
+                    <h4>Mythic</h4>
+                    <p>200+ pts</p>
+                </div>
+            </div>
+
+            <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+                <h2>Global <span class="gradient-text">Leaderboard</span></h2>
+            </div>
+
+            <div class="leaderboard-list" id="leaderboardContainer">
+                <div style="text-align: center; padding: 4rem;">
+                    <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color: var(--primary);"></i>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('leaderboardContainer');
+
+            try {
+                const res = await fetch('/api/leaderboard');
+                if (!res.ok) throw new Error("Failed to load leaders");
+                const leaders = await res.json();
+
+                if (leaders.length === 0) {
+                    container.innerHTML = '<p style="text-align: center;">No users yet!</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                leaders.forEach((user, index) => {
+                    const pos = index + 1;
+                    let posSpanClass = '';
+                    let itemExtraClass = '';
+                    if (pos === 1) posSpanClass = 'leader-top-3';
+                    else if (pos === 2) { posSpanClass = 'leader-top-3'; itemExtraClass = 'leader-item-2'; }
+                    else if (pos === 3) { posSpanClass = 'leader-top-3'; itemExtraClass = 'leader-item-3'; }
+
+                    // Use global logic if possible
+                    const rankInfo = typeof getRankInfo === 'function' ? getRankInfo(user.score) : { name: "Novice", class: "rank-novice", icon: "fa-seedling" };
+
+                    const item = document.createElement('div');
+                    item.className = `leaderboard-item glass-panel ranked fade-in ${rankInfo.class} ${itemExtraClass}`;
+                    item.style.animationDelay = `${index * 0.1}s`;
+
+                    let positionDisplay = pos;
+                    if (pos === 1) positionDisplay = '<i class="fa-solid fa-trophy"></i>';
+
+                    item.innerHTML = `
+                        <div class="leader-position ${posSpanClass}">${positionDisplay}</div>
+                        <img src="${user.avatar}" alt="${user.name}" class="leader-avatar">
+                        <div class="leader-info">
+                            <a href="profile.html?id=${user.id}" class="leader-name">${user.name}</a>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">${user.title}</p>
+                        </div>
+                        <div class="rank-badge" style="margin-right: 1.5rem;">
+                            <i class="fa-solid ${rankInfo.icon}"></i> ${rankInfo.name}
+                        </div>
+                        <div class="leader-score">
+                            ${user.score} <span>pts</span>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<div class="glass-panel" style="padding: 2rem; text-align: center; color: #f43f5e;">Error loading leaderboard data.</div>';
+            }
+        });
+    </script>
+</body>
+
+</html>

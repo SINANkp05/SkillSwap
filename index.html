@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description"
+        content="SkillSwap - Connect with people who have the skills you need or need the skills you have. Solve problems together.">
+    <title>SkillSwap | Connect, Share Skills, Solve Problems</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Background Decor -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-people-arrows"></i> Skill<span>Swap</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#discover">Discover</a>
+                <a href="scoreboard.html">Scoreboard</a>
+            </nav>
+            <div class="nav-actions" id="navAuthArea">
+                <a href="login.html" class="btn btn-secondary">Sign In</a>
+                <a href="signup.html" class="btn btn-primary">Join Free</a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <div class="badge">✨ Build together, solve together</div>
+                <h1 class="hero-title">Trade Skills.<br>Solve Problems. <span class="gradient-text">Grow
+                        Together.</span></h1>
+                <p class="hero-subtitle">The ultimate platform to connect with brilliant minds. Share what you know, get
+                    help with what you don't. Collaboration made beautiful.</p>
+
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="mainSearch"
+                        placeholder="e.g. 'I need a UI Designer' or 'I can teach Python'">
+                    <button class="btn btn-primary">Find Match</button>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat"><span class="stat-num" data-target="10000" data-suffix="+">10k+</span> Active Helpers</div>
+                    <div class="stat-divider"></div>
+                    <div class="stat"><span class="stat-num" data-target="45000" data-suffix="+">45k+</span> Problems Solved</div>
+                    <div class="stat-divider"></div>
+                    <div class="stat"><span class="stat-num">4.9/5</span> Avg Rating</div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <!-- Floating Glass Cards -->
+                <div class="float-card card-1 glass-panel">
+                    <img src="https://i.pravatar.cc/100?img=47" alt="User Avatar" class="avatar">
+                    <div class="card-info">
+                        <h4>Alex Chen</h4>
+                        <p class="offer-tag"><i class="fa-solid fa-gift"></i> Offers: React.js</p>
+                        <p class="need-tag"><i class="fa-solid fa-hand-holding-heart"></i> Needs: Logo Design</p>
+                    </div>
+                </div>
+                <div class="float-card card-2 glass-panel">
+                    <img src="https://i.pravatar.cc/100?img=12" alt="User Avatar" class="avatar">
+                    <div class="card-info">
+                        <h4>Sarah Jones</h4>
+                        <p class="offer-tag"><i class="fa-solid fa-gift"></i> Offers: Copywriting</p>
+                        <p class="need-tag"><i class="fa-solid fa-hand-holding-heart"></i> Needs: SEO Expert</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="how-it-works">
+            <div class="section-header">
+                <h2>How <span class="gradient-text">SkillSwap</span> Works</h2>
+                <p>Three simple steps to build your dream team or solve your toughest challenges.</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card glass-panel">
+                    <div class="step-icon"><i class="fa-solid fa-user-plus"></i></div>
+                    <h3>1. Create Profile</h3>
+                    <p>List the skills you have to offer and the specific problems you need help solving right now.</p>
+                </div>
+                <div class="step-card glass-panel">
+                    <div class="step-icon"><i class="fa-solid fa-compass"></i></div>
+                    <h3>2. Discover Matches</h3>
+                    <p>Our smart algorithm pairs you with users whose needs and offers perfectly align with yours.</p>
+                </div>
+                <div class="step-card glass-panel">
+                    <div class="step-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+                    <h3>3. Connect & Collab</h3>
+                    <p>Message your matches securely, exchange knowledge, and conquer your goals together.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Discover Hub / Feed -->
+        <section id="discover" class="discover-hub">
+            <div class="section-header">
+                <h2>The <span class="gradient-text">Connection</span> Hub</h2>
+                <p>Browse the latest requests and active experts ready to help.</p>
+            </div>
+
+            <div class="feed-tabs">
+                <button class="tab-btn active" data-tab="needing-help">People Needing Help</button>
+                <button class="tab-btn" data-tab="offering-skills">People Offering Skills</button>
+            </div>
+
+            <!-- Skill Filter Chips -->
+            <div class="skill-filter-chips" id="skillFilterChips">
+                <!-- Populated dynamically by app.js -->
+            </div>
+
+            <!-- Dynamic content rendered via JS -->
+            <div class="feed-grid" id="feedContainer">
+                <!-- Cards injected here -->
+            </div>
+
+            <div class="load-more-container">
+                <button class="btn btn-secondary load-more">View More Opportunities</button>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-box glass-panel">
+                <h2>Ready to unlock your potential?</h2>
+                <p>Join thousands of professionals trading skills and growing together every single day.</p>
+                <a href="signup.html" class="btn btn-primary btn-large">Create Your Free Profile</a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer glass-panel">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <i class="fa-solid fa-people-arrows"></i> Skill<span>Swap</span>
+                </a>
+                <p>Empowering the world through mutual skill exchange and collaboration.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Platform</h4>
+                    <a href="#">Explore</a>
+                    <a href="#">How it Works</a>
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="link-group">
+                    <h4>Legal</h4>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Guidelines</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 SkillSwap Inc. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-github"></i></a>
+                <a href="#"><i class="fa-brands fa-discord"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sign In | SkillSwap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 3rem 2.5rem;
+            border-top: 2px solid rgba(69, 162, 158, 0.4);
+            text-align: center;
+        }
+        .auth-logo { font-size: 2rem; margin-bottom: 2rem; display: inline-flex; text-decoration: none; }
+        .auth-card h2 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .auth-card > p { color: var(--text-muted); margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #cbd5e1; }
+        .form-input {
+            width: 100%;
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all var(--transition-fast);
+            outline: none;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(69, 162, 158, 0.2);
+            background: rgba(20, 20, 30, 0.8);
+        }
+        .auth-btn { width: 100%; margin-top: 1rem; padding: 14px; font-size: 1.1rem; }
+        .auth-footer { margin-top: 2rem; color: var(--text-muted); font-size: 0.95rem; }
+        .auth-footer a { color: var(--primary); font-weight: 600; }
+        .bg-shape { z-index: 0; }
+        .divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: var(--text-muted); font-size: 0.85rem; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+        .social-login-btns { display: flex; gap: 1rem; }
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .social-btn:hover { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2); }
+    </style>
+</head>
+
+<body>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <div class="auth-container">
+        <div class="auth-card glass-panel fade-in">
+            <a href="index.html" class="logo auth-logo">
+                <i class="fa-solid fa-people-arrows"></i> Skill<span>Swap</span>
+            </a>
+            <h2>Welcome Back</h2>
+            <p>Sign in to continue connecting and sharing.</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-toggle">
+                        <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                        <i class="fa-solid fa-eye pwd-toggle" id="pwdToggle"></i>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted);">
+                        <input type="checkbox" id="rememberMe" style="accent-color: var(--primary);"> Remember me
+                    </label>
+                    <a href="#" style="color: var(--primary);">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary auth-btn" id="loginBtn">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+                </button>
+            </form>
+
+            <div class="divider">or continue with</div>
+            <div class="social-login-btns">
+                <button class="social-btn" onclick="showToast('Google login coming soon!', 'info')">
+                    <i class="fa-brands fa-google"></i> Google
+                </button>
+                <button class="social-btn" onclick="showToast('GitHub login coming soon!', 'info')">
+                    <i class="fa-brands fa-github"></i> GitHub
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="signup.html">Join for Free</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // Global toast function
+        function showToast(message, type = 'info', duration = 3500) {
+            const container = document.getElementById('toast-container');
+            const iconMap = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info', warning: 'fa-triangle-exclamation' };
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fa-solid ${iconMap[type] || iconMap.info} toast-icon"></i><span class="toast-msg">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 400);
+            }, duration);
+        }
+
+        // Password show/hide toggle
+        const pwdInput = document.getElementById('password');
+        const pwdToggle = document.getElementById('pwdToggle');
+        if (pwdToggle) {
+            pwdToggle.addEventListener('click', () => {
+                const isHidden = pwdInput.type === 'password';
+                pwdInput.type = isHidden ? 'text' : 'password';
+                pwdToggle.className = `fa-solid ${isHidden ? 'fa-eye-slash' : 'fa-eye'} pwd-toggle`;
+            });
+        }
+
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Signing in...';
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showToast(`Welcome back, ${data.user.first_name || data.user.name}! 🎉`, 'success');
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+                } else {
+                    showToast(data.error || 'Login failed. Please try again.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In';
+                }
+            } catch (err) {
+                showToast('Could not connect to server. Is it running?', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In';
+            }
+        });
+    </script>
+</body>
+
+</html>

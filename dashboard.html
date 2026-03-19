@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>My Dashboard | SkillSwap</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-hero {
+            padding-top: 120px;
+            padding-bottom: 3rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .user-panel {
+            padding: 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-panel .avatar-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-panel .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-base);
+            box-shadow: 0 0 0 3px rgba(var(--rank-glow, 69, 162, 158), 0.3);
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-panel h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-panel p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(var(--rank-glow), 0.8), rgba(var(--rank-glow), 1));
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+            box-shadow: 0 0 10px rgba(var(--rank-glow), 0.5);
+        }
+
+        .next-rank-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 2;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            z-index: 2;
+            position: relative;
+        }
+
+        .feed-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .swap-card {
+            background: rgba(20, 20, 30, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .swap-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .swap-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .swap-details h4 {
+            margin: 0 0 0.3rem 0;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .swap-details p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .swap-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .badge-status {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-accepted {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 968px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="rank-novice" id="dashboardBody">
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <header class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-people-arrows"></i> Skill<span>Swap</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="scoreboard.html">Scoreboard</a>
+            </nav>
+            <div class="nav-actions" id="navAuthArea">
+                <!-- Dynamically populated by app.js -->
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <main class="dashboard-hero fade-in">
+        <div class="section-header" style="text-align: left; margin-bottom: 1rem;">
+            <h2>Welcome back, <span class="gradient-text" id="welcomeName">User</span></h2>
+            <p>Ready to make some connections today?</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: User Stats + Widgets -->
+            <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                <div class="user-panel glass-panel ranked" id="userPanel">
+                    <div style="text-align: center; padding: 2rem;">
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--primary);"></i>
+                    </div>
+                </div>
+
+                <!-- Trending Hashtags Widget -->
+                <div class="glass-panel trending-widget" id="trendingWidget">
+                    <h4><i class="fa-solid fa-fire" style="color:#f59e0b;"></i> Trending Topics</h4>
+                    <div class="trending-tags" id="trendingTagsList">
+                        <span style="color:var(--text-muted);font-size:0.85rem;">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Suggested Connections Widget -->
+                <div class="glass-panel suggested-widget" id="suggestedWidget">
+                    <h4><i class="fa-solid fa-user-plus" style="color:var(--secondary);"></i> People to Connect With</h4>
+                    <div id="suggestedUsersList">
+                        <div style="text-align:center;color:var(--text-muted);font-size:0.85rem;">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Tailored Feed -->
+            <div class="feed-section">
+                <div class="glass-panel"
+                    style="padding: 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 1.3rem;">Discover Opportunities</h3>
+                    <div class="feed-tabs" style="margin: 0; padding: 4px;">
+                        <button class="tab-btn active" data-tab="needing-help"
+                            style="padding: 6px 16px; font-size: 0.9rem;">Needing Help</button>
+                        <button class="tab-btn" data-tab="offering-skills"
+                            style="padding: 6px 16px; font-size: 0.9rem;">Offering Skills</button>
+                        <button class="tab-btn" data-tab="community-feed"
+                            style="padding: 6px 16px; font-size: 0.9rem;">Community Feed</button>
+                        <button class="tab-btn" data-tab="my-swaps"
+                            style="padding: 6px 16px; font-size: 0.9rem; background: rgba(69, 162, 158, 0.2); border: 1px solid var(--primary);">My
+                            Swaps</button>
+                    </div>
+                </div>
+
+                <!-- Reusing the feed styles from index.html -->
+                <div class="feed-grid" id="feedContainer"
+                    style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                    <!-- Cards injected here via app.js main logic -->
+                </div>
+
+                <!-- Swaps Container -->
+                <div id="swapsContainer" style="display: none; width: 100%;">
+                    <div style="text-align: center; padding: 2rem;">
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--primary);"></i>
+                    </div>
+                </div>
+
+                <!-- Community Feed Container -->
+                <div id="communityFeedContainer" style="display: none; width: 100%;">
+                    <div id="feedPostsList">
+                        <div style="text-align: center; padding: 2rem;">
+                            <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--primary);"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loggedInUser = JSON.parse(localStorage.getItem('user'));
+            if (!loggedInUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('welcomeName').textContent = loggedInUser.name.split(' ')[0];
+
+            try {
+                // Fetch latest user data from DB to get accurate score
+                const response = await fetch(`/api/user/${loggedInUser.id}`);
+                if (!response.ok) throw new Error("Could not fetch user data");
+                const user = await response.json();
+
+                // Calculate Rank Progress
+                const score = user.score || 0;
+                let nextRankScore = 20;
+
+                // Get rank info globally
+                const rankInfo = typeof getRankInfo === 'function' ? getRankInfo(score) : { name: "Novice", class: "rank-novice", icon: "fa-seedling" };
+                document.getElementById('dashboardBody').className = rankInfo.class;
+
+                if (score < 20) nextRankScore = 20;
+                else if (score < 40) nextRankScore = 40;
+                else if (score < 60) nextRankScore = 60;
+                else if (score < 80) nextRankScore = 80;
+                else if (score < 100) nextRankScore = 100;
+                else if (score < 150) nextRankScore = 150;
+                else if (score < 200) nextRankScore = 200;
+                else nextRankScore = score;
+
+                let progressPct = score >= 200 ? 100 : (score / nextRankScore) * 100;
+
+                const userPanel = document.getElementById('userPanel');
+                userPanel.innerHTML = `
+                    <div class="avatar-wrapper">
+                        <img src="${user.avatar}" alt="Avatar" class="avatar">
+                        <div class="rank-badge" style="position: absolute; bottom: -5px; right: -10px; background: var(--bg-surface); z-index: 3;">
+                            <i class="fa-solid ${rankInfo.icon}"></i> ${rankInfo.name}
+                        </div>
+                    </div>
+                    
+                    <h2>${user.name}</h2>
+                    <p>${user.title}</p>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value">${score}</div>
+                            <div class="stat-label">Total Score</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">${Math.floor(score / 10)}</div>
+                            <div class="stat-label">Swaps Made</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${progressPct}%;"></div>
+                    </div>
+                    <div class="next-rank-text">
+                        ${score >= 200 ? 'Highest Rank Achieved! 🔥' : `${nextRankScore - score} pts to next rank`}
+                    </div>
+
+                    <div class="analytics-row">
+                        <div class="analytics-card">
+                            <div class="a-value">${user.profile_views || 0}</div>
+                            <div class="a-label">Profile Views</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="a-value">${(user.portfolio_links || []).length}</div>
+                            <div class="a-label">Links</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-actions">
+                        <a href="profile.html?id=${user.id}" class="btn btn-primary" style="width: 100%;">
+                            <i class="fa-solid fa-user-edit"></i> Edit Profile
+                        </a>
+                        <a href="index.html" class="btn btn-secondary" style="width: 100%;">
+                            <i class="fa-solid fa-compass"></i> Full Discover Page
+                        </a>
+                    </div>
+                `;
+
+                // Load trending hashtags
+                loadTrendingTags();
+
+                // Load suggested connections
+                loadSuggestedUsers(loggedInUser.id);
+
+
+                const localTabBtns = document.querySelectorAll('.feed-tabs .tab-btn');
+                const feedMain = document.getElementById('feedContainer');
+                const swapsMain = document.getElementById('swapsContainer');
+                const communityFeedMain = document.getElementById('communityFeedContainer');
+                const listContainer = document.getElementById('feedPostsList');
+
+                localTabBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        localTabBtns.forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+
+                        const tabId = e.target.dataset.tab;
+
+                        feedMain.style.display = 'none';
+                        swapsMain.style.display = 'none';
+                        communityFeedMain.style.display = 'none';
+
+                        if (tabId === 'my-swaps') {
+                            swapsMain.style.display = 'block';
+                            loadUserSwaps(loggedInUser.id);
+                        } else if (tabId === 'community-feed') {
+                            communityFeedMain.style.display = 'block';
+                            loadGlobalFeed();
+                        } else {
+                            feedMain.style.display = 'grid';
+                            if (typeof visibleCount !== 'undefined') visibleCount = 6;
+                            if (typeof renderFeed === 'function') renderFeed(tabId);
+                        }
+                    });
+                });
+
+                let currentHashtag = null;
+
+                window.filterByHashtag = (tag) => {
+                    currentHashtag = (currentHashtag === tag) ? null : tag;
+                    loadGlobalFeed(currentHashtag);
+                };
+
+                async function loadGlobalFeed(hashtag = null) {
+                    try {
+                        let url = `/api/feed/posts?userId=${loggedInUser.id}`;
+                        if (hashtag) url += `&hashtag=${encodeURIComponent(hashtag)}`;
+
+                        const res = await fetch(url);
+                        const posts = await res.json();
+
+                        if (posts.length === 0) {
+                            listContainer.innerHTML = `<div class="glass-panel" style="padding: 3rem; text-align: center;"><p class="text-muted">${hashtag ? `No posts found with hashtag #${hashtag}` : 'No one has shared an update yet.'}</p></div>`;
+                            return;
+                        }
+
+                        listContainer.innerHTML = posts.map(post => {
+                            const postDate = new Date(post.created_at).toLocaleDateString();
+                            const postTime = new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                            return `
+                            <div class="post-card glass-panel fade-in" style="max-width: 600px; margin-left: auto; margin-right: auto;" id="post-${post.id}">
+                                <div class="post-header">
+                                    <a href="profile.html?id=${post.user_id}" style="text-decoration: none;">
+                                        <img src="${post.avatar}" alt="${post.first_name}" class="profile-avatar" style="width: 45px; height: 45px; border: 2px solid var(--primary);">
+                                    </a>
+                                    <div class="post-author-info">
+                                        <a href="profile.html?id=${post.user_id}" style="text-decoration: none; color: white;">
+                                            <h4>${post.first_name} ${post.last_name}</h4>
+                                        </a>
+                                        <span class="post-time">${postDate} at ${postTime}</span>
+                                    </div>
+                                </div>
+                                <div class="post-content">${post.content}</div>
+
+                                ${post.image_url ? `
+                                <div class="post-image-container" style="margin: 1rem -1.5rem; max-height: 400px; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+                                    <img src="${post.image_url}" class="post-image" alt="Post content" style="width: 100%; height: auto; object-fit: contain;">
+                                </div>
+                                ` : ''}
+
+                                ${post.hashtags && post.hashtags.length > 0 ? `
+                                <div class="post-hashtags">
+                                    ${post.hashtags.map(tag => `<span class="hashtag" onclick="filterByHashtag('${tag}')">#${tag}</span>`).join('')}
+                                </div>
+                                ` : ''}
+
+                                <div class="post-footer">
+                                    <button class="like-btn ${post.is_liked ? 'liked' : ''}" onclick="handleGlobalLike(${post.id})">
+                                        <i class="${post.is_liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> ${post.likes_count}
+                                    </button>
+                                    <button class="like-btn" onclick="toggleGlobalComments(${post.id})">
+                                        <i class="fa-solid fa-comment"></i> Comment
+                                    </button>
+                                </div>
+
+                                <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                                    <div class="comments-list" id="comments-list-${post.id}">
+                                        <div style="text-align: center; padding: 1rem;"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                                    </div>
+                                    <div class="comment-input-area">
+                                        <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Write a comment...">
+                                        <button class="comment-btn" onclick="submitGlobalComment(${post.id})">
+                                            <i class="fa-solid fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('');
+                    } catch (err) {
+                        listContainer.innerHTML = '<p class="text-muted" style="text-align: center;">Failed to load community feed.</p>';
+                    }
+                }
+
+                window.toggleGlobalComments = async (postId) => {
+                    const section = document.getElementById(`comments-${postId}`);
+                    if (section.style.display === 'none') {
+                        section.style.display = 'block';
+                        loadGlobalComments(postId);
+                    } else {
+                        section.style.display = 'none';
+                    }
+                };
+
+                async function loadGlobalComments(postId) {
+                    const container = document.getElementById(`comments-list-${postId}`);
+                    try {
+                        const res = await fetch(`/api/posts/${postId}/comments?userId=${loggedInUser.id}`);
+                        const comments = await res.json();
+
+                        if (comments.length === 0) {
+                            container.innerHTML = '<p class="text-muted" style="font-size: 0.8rem; text-align: center;">No comments yet.</p>';
+                            return;
+                        }
+
+                        container.innerHTML = comments.map(c => `
+                            <div class="comment-item">
+                                <img src="${c.avatar}" alt="${c.first_name}" class="comment-avatar">
+                                <div class="comment-bubble">
+                                    <span class="comment-author">${c.first_name} ${c.last_name}</span>
+                                    <p class="comment-text">${c.content}</p>
+                                    <div class="comment-meta">
+                                        <span>${new Date(c.created_at).toLocaleDateString()}</span>
+                                        <span class="comment-like-btn ${c.is_liked ? 'liked' : ''}" onclick="handleGlobalCommentLike(${c.id}, ${postId})">
+                                            <i class="fa-solid fa-heart"></i> ${c.likes_count}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } catch (err) {
+                        container.innerHTML = '<p class="text-muted">Error loading comments.</p>';
+                    }
+                }
+
+                window.submitGlobalComment = async (postId) => {
+                    const input = document.getElementById(`comment-input-${postId}`);
+                    const content = input.value.trim();
+                    if (!content) return;
+
+                    try {
+                        const res = await fetch(`/api/posts/${postId}/comments`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: loggedInUser.id, content })
+                        });
+                        if (res.ok) {
+                            input.value = '';
+                            loadGlobalComments(postId);
+                        }
+                    } catch (err) {
+                        alert("Failed to post comment");
+                    }
+                };
+
+                window.handleGlobalCommentLike = async (commentId, postId) => {
+                    try {
+                        const res = await fetch(`/api/comments/${commentId}/like`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: loggedInUser.id })
+                        });
+                        if (res.ok) loadGlobalComments(postId);
+                    } catch (err) {
+                        console.error("Comment like failed", err);
+                    }
+                };
+
+                window.handleGlobalLike = async (postId) => {
+                    try {
+                        const res = await fetch(`/api/posts/${postId}/like`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: loggedInUser.id })
+                        });
+                        if (res.ok) loadGlobalFeed(currentHashtag);
+                    } catch (err) {
+                        console.error("Like failed", err);
+                    }
+                };
+
+            } catch (err) {
+                document.getElementById('userPanel').innerHTML = '<p style="color: #f43f5e;">Error loading user data.</p>';
+                console.error(err);
+            }
+        });
+
+        async function loadUserSwaps(userId) {
+            const container = document.getElementById('swapsContainer');
+            container.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--primary);"></i></div>';
+
+            try {
+                const res = await fetch(`/api/swaps/me?userId=${userId}`);
+                if (!res.ok) throw new Error("Failed to load swaps");
+
+                const swaps = await res.json();
+
+                if (swaps.length === 0) {
+                    container.innerHTML = '<div class="glass-panel" style="padding: 2rem; text-align: center;"><p style="color: var(--text-muted);">No active swap requests found. Go discover someone!</p></div>';
+                    return;
+                }
+
+                let html = '';
+                swaps.forEach(swap => {
+                    if (swap.pointsAwarded && swap.status === 'accepted') return; // Hide fully completed swaps that generated points
+                    if (swap.status === 'rejected') return; // Hide rejected
+
+                    const otherUser = swap.otherUser;
+                    let actionsHtml = '';
+                    let statusHtml = '';
+
+                    if (swap.status === 'pending') {
+                        statusHtml = '<span class="badge-status badge-pending">Pending</span>';
+                        if (swap.isRequester) {
+                            actionsHtml = '<div style="font-size: 0.85rem; color: var(--text-muted);">Waiting for response</div>';
+                        } else {
+                            actionsHtml = `
+                                <button class="btn btn-secondary" onclick="respondSwap(${swap.id}, 'reject')" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-xmark"></i> Reject</button>
+                                <button class="btn btn-primary" onclick="respondSwap(${swap.id}, 'accept')" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-check"></i> Accept</button>
+                            `;
+                        }
+                    } else if (swap.status === 'accepted') {
+                        statusHtml = '<span class="badge-status badge-accepted">Active</span>';
+
+                        if (swap.myCompletionStatus) {
+                            actionsHtml = `
+                                <a href="chat.html?swapId=${swap.id}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-comments"></i> Chat</a>
+                                <div style="font-size: 0.85rem; color: #10b981;"><i class="fa-solid fa-check-double"></i> You completed</div>
+                            `;
+                        } else {
+                            actionsHtml = `
+                                <a href="chat.html?swapId=${swap.id}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-comments"></i> Chat</a>
+                                <button class="btn btn-primary" onclick="completeSwap(${swap.id}, ${userId})" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-flag-checkered"></i> Mark Completed</button>
+                            `;
+                        }
+
+                        if (swap.theirCompletionStatus && !swap.myCompletionStatus) {
+                            statusHtml += ' <span style="font-size: 0.75rem; color: var(--text-muted);">(Partner is done)</span>';
+                        }
+                    }
+
+                    html += `
+                        <div class="swap-card fade-in">
+                            <div class="swap-info">
+                                <img src="${otherUser.avatar}" alt="Avatar" class="swap-avatar">
+                                <div class="swap-details">
+                                    <h4><a href="profile.html?id=${otherUser.id}" style="color: white;">${otherUser.name}</a></h4>
+                                    <p>${swap.isRequester ? 'You requested to swap' : 'Requested to swap with you'} &bull; ${statusHtml}</p>
+                                </div>
+                            </div>
+                            <div class="swap-actions">
+                                ${actionsHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (html === '') {
+                    container.innerHTML = '<div class="glass-panel" style="padding: 2rem; text-align: center;"><p style="color: var(--text-muted);">No active swap requests found.</p></div>';
+                } else {
+                    container.innerHTML = html;
+                }
+
+            } catch (err) {
+                container.innerHTML = '<div class="glass-panel" style="padding: 2rem; text-align: center; color: #f43f5e;">Error loading swaps data.</div>';
+                console.error(err);
+            }
+        }
+
+        async function respondSwap(swapId, action) {
+            try {
+                const res = await fetch(`/api/swaps/${swapId}/${action}`, { method: 'POST' });
+                if (res.ok) {
+                    const loggedInUser = JSON.parse(localStorage.getItem('user'));
+                    loadUserSwaps(loggedInUser.id);
+                } else {
+                    showToast('Failed to update swap status.', 'warning');
+                }
+            } catch (err) {
+                showToast('Network error.', 'error');
+            }
+        }
+
+        async function completeSwap(swapId, userId) {
+            try {
+                const res = await fetch(`/api/swaps/${swapId}/complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message || 'Swap marked complete! 🏆', 'success');
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showToast(data.error || 'Failed to complete swap.', 'warning');
+                }
+            } catch (err) {
+                showToast('Network error.', 'error');
+            }
+        }
+
+        async function loadTrendingTags() {
+            const el = document.getElementById('trendingTagsList');
+            if (!el) return;
+            try {
+                const res = await fetch('/api/hashtags/trending');
+                const tags = await res.json();
+                if (!tags.length) {
+                    el.innerHTML = '<span style="color:var(--text-muted);font-size:0.82rem;">No trending topics yet. Start posting!</span>';
+                    return;
+                }
+                el.innerHTML = tags.map(t =>
+                    `<span class="trending-tag" onclick="jumpToCommunityFeed('${t.hashtag}')">\#${t.hashtag} <span class="tag-count">${t.count}</span></span>`
+                ).join('');
+            } catch (e) {
+                el.innerHTML = '<span style="color:var(--text-muted);font-size:0.82rem;">Could not load.</span>';
+            }
+        }
+
+        async function loadSuggestedUsers(myId) {
+            const el = document.getElementById('suggestedUsersList');
+            if (!el) return;
+            try {
+                const res = await fetch('/api/feed');
+                const users = await res.json();
+                const others = users.filter(u => u.id != myId).slice(0, 4);
+                if (!others.length) { el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;">No suggestions yet.</div>'; return; }
+                el.innerHTML = others.map(u => `
+                    <div class="suggested-user">
+                        <img src="${u.avatar}" alt="${u.name}">
+                        <div class="suggested-user-info">
+                            <div class="su-name">${u.name}</div>
+                            <div class="su-skill">${(u.offers || [])[0] || 'SkillSwap Member'}</div>
+                        </div>
+                        <a href="profile.html?id=${u.id}" class="su-btn">View</a>
+                    </div>
+                `).join('');
+            } catch (e) {
+                el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;">Could not load.</div>';
+            }
+        }
+
+        window.jumpToCommunityFeed = function(tag) {
+            const communityBtn = document.querySelector('.tab-btn[data-tab="community-feed"]');
+            if (communityBtn) { communityBtn.click(); }
+            setTimeout(() => {
+                currentHashtag = tag;
+                loadGlobalFeed(tag);
+            }, 300);
+        };
+
+
+
+    </script>
+    <div id="toast-container"></div>
+</body>
+
+</html>

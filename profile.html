@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>User Profile | SkillSwap</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .profile-hero {
+            padding-top: 120px;
+            padding-bottom: 4rem;
+            position: relative;
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .profile-header-card {
+            padding: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--bg-base);
+            box-shadow: 0 0 0 4px rgba(var(--rank-glow, 69, 162, 158), 0.3);
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-rank-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--bg-surface);
+            border: 2px solid rgba(var(--rank-glow, 69, 162, 158), 0.5);
+            color: var(--text-main);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            z-index: 3;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-info {
+            flex: 1;
+            z-index: 2;
+        }
+
+        .profile-name {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-title {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .p-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .p-stat-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            color: white;
+        }
+
+        .p-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .profile-body {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .profile-section {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-section h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .about-text {
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            gap: 15px;
+        }
+
+        .skill-item i {
+            font-size: 1.2rem;
+        }
+
+        .skill-item.offer i {
+            color: var(--secondary);
+        }
+
+        .skill-item.need i {
+            color: #f43f5e;
+        }
+
+        .skill-item span {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-header-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+
+            .profile-actions {
+                justify-content: center;
+            }
+
+            .profile-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-base);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform var(--transition-fast);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: white;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Avatar Upload */
+        .avatar-upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .avatar-upload-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--border-color);
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .avatar-upload-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .avatar-upload-wrapper:hover .avatar-upload-preview {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(69, 162, 158, 0.2);
+            filter: brightness(0.75);
+        }
+
+        .avatar-upload-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+            color: white;
+            font-size: 1.5rem;
+            pointer-events: none;
+        }
+
+        .avatar-upload-wrapper:hover .avatar-upload-overlay {
+            opacity: 1;
+        }
+
+        .avatar-upload-hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        #avatarFileInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="rank-novice" id="profileBody">
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <header class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-people-arrows"></i> Skill<span>Swap</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#discover">Discover</a>
+            </nav>
+            <div class="nav-actions" id="navAuthArea">
+                <!-- Dynamically populated -->
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <main class="profile-hero fade-in">
+        <div class="profile-container" id="profileContainer">
+            <div style="text-align: center; padding: 4rem;">
+                <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color: var(--primary);"></i>
+                <p style="margin-top: 1rem; color: var(--text-muted);">Loading profile...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Edit Profile</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="editProfileForm">
+                <!-- Avatar Upload -->
+                <div class="avatar-upload-area" id="avatarUploadArea">
+                    <div class="avatar-upload-wrapper">
+                        <img id="avatarPreview" src="" alt="Profile Photo" class="avatar-upload-preview">
+                        <div class="avatar-upload-overlay"><i class="fa-solid fa-camera"></i></div>
+                    </div>
+                    <span class="avatar-upload-hint"><i class="fa-solid fa-upload" style="color: var(--primary);"></i>
+                        Click to change photo &bull; Max 5 MB</span>
+                </div>
+                <input type="file" id="avatarFileInput" accept="image/*">
+
+                <div class="form-group">
+                    <label for="editTitle">Professional Title</label>
+                    <input type="text" id="editTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">About Me</label>
+                    <textarea id="editDescription" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editOffers">I Offer (comma-separated)</label>
+                    <input type="text" id="editOffers" class="form-control"
+                        placeholder="e.g. React, UX Design, Copywriting" required>
+                </div>
+                <div class="form-group">
+                    <label for="editNeeds">I Need (comma-separated)</label>
+                    <input type="text" id="editNeeds" class="form-control" placeholder="e.g. Marketing, Logo Design"
+                        required>
+                </div>
+                <!-- ADD PORTFOLIO LINKS -->
+                <div class="form-group">
+                    <label for="editPortfolio">Portfolio/Social Links (comma-separated URLs)</label>
+                    <input type="text" id="editPortfolio" class="form-control" placeholder="e.g. https://github.com/alex, https://dribbble.com/alex">
+                </div>
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id');
+            const profileContainer = document.getElementById('profileContainer');
+            const profileBody = document.getElementById('profileBody');
+
+            if (!userId) {
+                profileContainer.innerHTML = '<div class="glass-panel" style="padding: 3rem; text-align: center;"><h2>User Not Found</h2><p>No user ID provided.</p><a href="index.html" class="btn btn-primary" style="margin-top:1rem;">Go Home</a></div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/user/${userId}`);
+                if (!response.ok) throw new Error("User fetch failed");
+                const user = await response.json();
+
+                // Get rank logic globally from app.js if possible, else duplicate locally for this page
+                const rankInfo = typeof getRankInfo === 'function' ? getRankInfo(user.score) : { name: "Novice", class: "rank-novice", icon: "fa-seedling" };
+
+                // Set body rank class for glowing effects
+                profileBody.className = rankInfo.class;
+
+                const offersHtml = user.offers.map(s => `<div class="skill-item offer"><i class="fa-solid fa-check-circle"></i> <span>${s}</span></div>`).join('');
+                const needsHtml = user.needs.map(s => `<div class="skill-item need"><i class="fa-solid fa-magnifying-glass"></i> <span>${s}</span></div>`).join('');
+
+                const loggedInUser = JSON.parse(localStorage.getItem('user'));
+                const isOwnProfile = loggedInUser && loggedInUser.id == user.id;
+
+                let actionButtonsHtml = '';
+                if (isOwnProfile) {
+                    actionButtonsHtml = `
+                        <button class="btn btn-primary btn-large" id="openEditBtn">
+                            <i class="fa-solid fa-pen"></i> Edit Profile
+                        </button>
+                    `;
+                } else {
+                    actionButtonsHtml = `
+                        <button class="btn btn-primary btn-large" onclick="handleSwap(${user.id})">
+                            <i class="fa-solid fa-handshake"></i> Request Swap
+                        </button>
+                        <button class="btn btn-secondary btn-large">
+                            <i class="fa-solid fa-envelope"></i> Message
+                        </button>
+                    `;
+                }
+
+                profileContainer.innerHTML = `
+                    <div class="profile-header-card glass-panel ranked">
+                        <div class="profile-avatar-wrapper">
+                            <img src="${user.avatar}" alt="${user.name}" class="profile-avatar">
+                            <div class="profile-rank-badge">
+                                <i class="fa-solid ${rankInfo.icon}"></i> ${rankInfo.name}
+                            </div>
+                        </div>
+                        <div class="profile-info">
+                            <h1 class="profile-name">
+                                ${user.name} 
+                                <span class="badge" style="margin: 0; padding: 4px 10px; font-size: 0.75rem;">${user.type === 'offering-skills' ? 'Offering Skills' : 'Needing Help'}</span>
+                            </h1>
+                            <p class="profile-title">${user.title}</p>
+                            <div class="profile-stats">
+                                <div class="p-stat">
+                                    <span class="p-stat-val" id="profileScoreDisplay">${user.score || 0}</span>
+                                    <span class="p-stat-label">Total Score</span>
+                                </div>
+                                <div class="p-stat">
+                                    <span class="p-stat-val" id="profileSwapsDisplay">${Math.floor((user.score || 0) / 10)}</span>
+                                    <span class="p-stat-label">Swaps Made</span>
+                                </div>
+                                <div class="p-stat">
+                                    <span class="p-stat-val">${user.profile_views || 0}</span>
+                                    <span class="p-stat-label">Profile Views</span>
+                                </div>
+                            </div>
+                            <div class="profile-actions">
+                                ${actionButtonsHtml}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-body">
+                        <div class="profile-main-col">
+                            <!-- Create Post Section (Only for own profile) -->
+                            ${isOwnProfile ? `
+                            <div class="profile-section glass-panel post-creation-card">
+                                <h3><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Share an Update</h3>
+                                <div class="post-form-header">
+                                    <img src="${user.avatar}" alt="Avatar" class="profile-avatar" style="width: 40px; height: 40px; border: 2px solid var(--primary);">
+                                    <h4 style="font-size: 0.9rem; color: var(--text-muted);">What's on your mind, ${(user.first_name || user.name || '').split(' ')[0]}?</h4>
+                                </div>
+                                <div class="post-input-wrapper">
+                                    <textarea id="postInput" class="post-input" placeholder="Share a skill highlight, a project update, or just say hi..."></textarea>
+                                    
+                                    <!-- Hashtag Selector -->
+                                    <div class="hashtag-selector" id="hashtagSelector">
+                                        ${[...new Set([...user.offers, ...user.needs])].map(skill => `
+                                            <span class="tag-option" data-tag="${skill.toLowerCase()}">#${skill.toLowerCase()}</span>
+                                        `).join('')}
+                                    </div>
+                                    
+                                    <!-- Photo Preview -->
+                                    <div id="postPhotoPreview" style="display: none; margin-top: 1rem; position: relative;">
+                                        <img src="" id="photoPreviewImg" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color);">
+                                        <button id="removePhotoBtn" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); border: none; color: white; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">&times;</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="post-actions">
+                                    <div class="post-options">
+                                        <button class="post-option-btn" id="photoOptionBtn">
+                                            <i class="fa-solid fa-image"></i> Photo
+                                        </button>
+                                        <button class="post-option-btn" id="tagOptionBtn">
+                                            <i class="fa-solid fa-hashtag"></i> Tag Skills
+                                        </button>
+                                        <input type="file" id="postPhotoInput" accept="image/*" style="display: none;">
+                                    </div>
+                                    <button class="btn btn-primary" id="createPostBtn">
+                                        <i class="fa-solid fa-paper-plane"></i> Post
+                                    </button>
+                                </div>
+                            </div>
+                            ` : ''}
+
+                            <div class="profile-section glass-panel">
+                                <h3><i class="fa-solid fa-address-card" style="color: var(--primary);"></i> About Me</h3>
+                                <p class="about-text">${user.description}</p>
+                                
+                                ${user.portfolio_links && user.portfolio_links.length > 0 ? `
+                                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                                    <h4 style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--text-muted);"><i class="fa-solid fa-link"></i> Portfolio & Links</h4>
+                                    <div class="portfolio-links">
+                                        ${user.portfolio_links.map(link => `
+                                            <a href="${link}" target="_blank" rel="noopener noreferrer" class="portfolio-link-chip">
+                                                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8rem;"></i> ${link.replace('https://', '').replace('http://', '').replace('www.', '')}
+                                            </a>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                ` : ''}
+                            </div>
+                            
+                            <!-- RATINGS SECTION -->
+                            <div class="profile-section glass-panel" id="userRatingsSection">
+                                <h3><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Ratings & Reviews</h3>
+                                <div id="userRatingsContainer">
+                                    <div style="text-align: center; padding: 2rem;">
+                                        <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--primary);"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profile-section glass-panel" id="userPostsSection">
+                                <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Recent Posts</h3>
+                                <div id="userPostsContainer">
+                                    <div style="text-align: center; padding: 2rem;">
+                                        <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--primary);"></i>
+                                        <p style="margin-top: 0.5rem; color: var(--text-muted);">Loading posts...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-side-col">
+                            <div class="profile-section glass-panel">
+                                <h3><i class="fa-solid fa-gift" style="color: var(--secondary);"></i> Offers</h3>
+                                <div class="skill-list">${offersHtml || '<p class="text-muted">None specified</p>'}</div>
+                            </div>
+                            <div class="profile-section glass-panel">
+                                <h3><i class="fa-solid fa-hand-holding-heart" style="color: #f43f5e;"></i> Needs</h3>
+                                <div class="skill-list">${needsHtml || '<p class="text-muted">None specified</p>'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // --- POSTING LOGIC ---
+                const postsContainer = document.getElementById('userPostsContainer');
+
+                async function loadUserPosts() {
+                    try {
+                        const res = await fetch(`/api/posts/user/${userId}`);
+                        const posts = await res.json();
+                        renderUserPosts(posts);
+                    } catch (err) {
+                        postsContainer.innerHTML = '<p class="text-muted">Failed to load posts.</p>';
+                    }
+                }
+
+                function renderUserPosts(posts) {
+                    if (posts.length === 0) {
+                        postsContainer.innerHTML = '<p class="text-muted" style="text-align: center; padding: 2rem;">No posts yet.</p>';
+                        return;
+                    }
+
+                    postsContainer.innerHTML = posts.map(post => {
+                        const postDate = new Date(post.created_at).toLocaleDateString();
+                        const postTime = new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                        return `
+                        <div class="post-card glass-panel fade-in" id="post-${post.id}">
+                            <div class="post-header">
+                                <img src="${post.avatar}" alt="${post.first_name}" class="profile-avatar" style="width: 40px; height: 40px;">
+                                <div class="post-author-info">
+                                    <h4>${post.first_name} ${post.last_name}</h4>
+                                    <span class="post-time">${postDate} at ${postTime}</span>
+                                </div>
+                            </div>
+                            <div class="post-content">${post.content}</div>
+                            
+                            ${post.image_url ? `
+                            <div class="post-image-container">
+                                <img src="${post.image_url}" class="post-image" alt="Post content">
+                            </div>
+                            ` : ''}
+
+                            ${post.hashtags && post.hashtags.length > 0 ? `
+                            <div class="post-hashtags">
+                                ${post.hashtags.map(tag => `<span class="hashtag">#${tag}</span>`).join('')}
+                            </div>
+                            ` : ''}
+
+                            <div class="post-footer">
+                                <button class="like-btn ${post.is_liked ? 'liked' : ''}" onclick="handleLike(${post.id})">
+                                    <i class="fa-solid fa-heart"></i> ${post.likes_count}
+                                </button>
+                                <button class="like-btn" onclick="toggleComments(${post.id})">
+                                    <i class="fa-solid fa-comment"></i> Comment
+                                </button>
+                            </div>
+
+                            <!-- Comments Section -->
+                            <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                                <div class="comments-list" id="comments-list-${post.id}">
+                                    <div style="text-align: center; padding: 1rem;"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                                </div>
+                                <div class="comment-input-area">
+                                    <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Write a comment...">
+                                    <button class="comment-btn" onclick="submitComment(${post.id})">
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `}).join('');
+                }
+
+                window.toggleComments = async (postId) => {
+                    const section = document.getElementById(`comments-${postId}`);
+                    if (section.style.display === 'none') {
+                        section.style.display = 'block';
+                        loadComments(postId);
+                    } else {
+                        section.style.display = 'none';
+                    }
+                };
+
+                async function loadComments(postId) {
+                    const container = document.getElementById(`comments-list-${postId}`);
+                    const loggedInUser = JSON.parse(localStorage.getItem('user'));
+                    const userId = loggedInUser ? loggedInUser.id : null;
+
+                    try {
+                        const res = await fetch(`/api/posts/${postId}/comments?userId=${userId}`);
+                        const comments = await res.json();
+
+                        if (comments.length === 0) {
+                            container.innerHTML = '<p class="text-muted" style="font-size: 0.8rem; text-align: center;">No comments yet.</p>';
+                            return;
+                        }
+
+                        container.innerHTML = comments.map(c => `
+                            <div class="comment-item">
+                                <img src="${c.avatar}" alt="${c.first_name}" class="comment-avatar">
+                                <div class="comment-bubble">
+                                    <span class="comment-author">${c.first_name} ${c.last_name}</span>
+                                    <p class="comment-text">${c.content}</p>
+                                    <div class="comment-meta">
+                                        <span>${new Date(c.created_at).toLocaleDateString()}</span>
+                                        <span class="comment-like-btn ${c.is_liked ? 'liked' : ''}" onclick="handleCommentLike(${c.id}, ${postId})">
+                                            <i class="fa-solid fa-heart"></i> ${c.likes_count}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } catch (err) {
+                        container.innerHTML = '<p class="text-muted">Error loading comments.</p>';
+                    }
+                }
+
+                window.submitComment = async (postId) => {
+                    const input = document.getElementById(`comment-input-${postId}`);
+                    const content = input.value.trim();
+                    const loggedInUser = JSON.parse(localStorage.getItem('user'));
+                    if (!loggedInUser) return alert("Please log in to comment");
+                    if (!content) return;
+
+                    try {
+                        const res = await fetch(`/api/posts/${postId}/comments`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: loggedInUser.id, content })
+                        });
+                        if (res.ok) {
+                            input.value = '';
+                            loadComments(postId);
+                        }
+                    } catch (err) {
+                        alert("Failed to post comment");
+                    }
+                };
+
+                window.handleCommentLike = async (commentId, postId) => {
+                    const loggedInUser = JSON.parse(localStorage.getItem('user'));
+                    if (!loggedInUser) return alert("Please log in to like comments");
+
+                    try {
+                        const res = await fetch(`/api/comments/${commentId}/like`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: loggedInUser.id })
+                        });
+                        if (res.ok) loadComments(postId);
+                    } catch (err) {
+                        console.error("Comment like failed", err);
+                    }
+                };
+
+                window.handleLike = async (postId) => {
+                    const loggedInUser = JSON.parse(localStorage.getItem('user'));
+                    if (!loggedInUser) return alert("Please log in to like posts");
+
+                    try {
+                        const res = await fetch(`/api/posts/${postId}/like`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: loggedInUser.id })
+                        });
+                        if (res.ok) {
+                            const currentSearch = new URLSearchParams(window.location.search);
+                            const currentUserId = currentSearch.get('id');
+                            // Refresh feed with current user ID to get correct is_liked state
+                            const feedRes = await fetch(`/api/posts/user/${currentUserId}?userId=${loggedInUser.id}`);
+                            const posts = await feedRes.json();
+                            renderUserPosts(posts);
+                        }
+                    } catch (err) {
+                        console.error("Like failed", err);
+                    }
+                };
+
+                if (isOwnProfile) {
+                    const createPostBtn = document.getElementById('createPostBtn');
+                    const postInput = document.getElementById('postInput');
+                    const photoOptionBtn = document.getElementById('photoOptionBtn');
+                    const tagOptionBtn = document.getElementById('tagOptionBtn');
+                    const postPhotoInput = document.getElementById('postPhotoInput');
+                    const hashtagSelector = document.getElementById('hashtagSelector');
+                    const postPhotoPreview = document.getElementById('postPhotoPreview');
+                    const photoPreviewImg = document.getElementById('photoPreviewImg');
+                    const removePhotoBtn = document.getElementById('removePhotoBtn');
+
+                    let selectedFile = null;
+                    let selectedTags = [];
+
+                    photoOptionBtn.addEventListener('click', () => postPhotoInput.click());
+                    tagOptionBtn.addEventListener('click', () => {
+                        hashtagSelector.classList.toggle('visible');
+                        tagOptionBtn.classList.toggle('active');
+                    });
+
+                    postPhotoInput.addEventListener('change', (e) => {
+                        selectedFile = e.target.files[0];
+                        if (selectedFile) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                                photoPreviewImg.src = ev.target.result;
+                                postPhotoPreview.style.display = 'block';
+                                photoOptionBtn.classList.add('active');
+                            };
+                            reader.readAsDataURL(selectedFile);
+                        }
+                    });
+
+                    removePhotoBtn.addEventListener('click', () => {
+                        selectedFile = null;
+                        postPhotoInput.value = '';
+                        postPhotoPreview.style.display = 'none';
+                        photoOptionBtn.classList.remove('active');
+                    });
+
+                    hashtagSelector.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('tag-option')) {
+                            const tag = e.target.dataset.tag;
+                            if (selectedTags.includes(tag)) {
+                                selectedTags = selectedTags.filter(t => t !== tag);
+                                e.target.classList.remove('selected');
+                            } else {
+                                selectedTags.push(tag);
+                                e.target.classList.add('selected');
+                            }
+                        }
+                    });
+
+                    createPostBtn.addEventListener('click', async () => {
+                        const content = postInput.value.trim();
+                        if (!content && !selectedFile) return;
+
+                        createPostBtn.disabled = true;
+                        createPostBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Posting...';
+
+                        const formData = new FormData();
+                        formData.append('userId', user.id);
+                        formData.append('content', content);
+                        if (selectedFile) formData.append('photo', selectedFile);
+                        if (selectedTags.length > 0) formData.append('hashtags', JSON.stringify(selectedTags));
+
+                        try {
+                            const res = await fetch('/api/posts', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            if (res.ok) {
+                                postInput.value = '';
+                                selectedFile = null;
+                                selectedTags = [];
+                                postPhotoInput.value = '';
+                                postPhotoPreview.style.display = 'none';
+                                photoOptionBtn.classList.remove('active');
+                                hashtagSelector.classList.remove('visible');
+                                tagOptionBtn.classList.remove('active');
+                                document.querySelectorAll('.tag-option.selected').forEach(el => el.classList.remove('selected'));
+                                loadUserPosts();
+                            }
+                        } catch (err) {
+                            alert("Failed to create post");
+                        } finally {
+                            createPostBtn.disabled = false;
+                            createPostBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post';
+                        }
+                    });
+                }
+
+                loadUserPosts();
+
+                // Ratings Loading Logic
+                const ratingsContainer = document.getElementById('userRatingsContainer');
+                if (ratingsContainer) {
+                    fetch(`/api/user/${userId}/ratings`)
+                        .then(res => res.json())
+                        .then(ratings => {
+                            if (!ratings.length) {
+                                ratingsContainer.innerHTML = '<p class="text-muted" style="text-align:center;">No reviews yet.</p>';
+                                return;
+                            }
+                            ratingsContainer.innerHTML = ratings.map(r => `
+                                <div class="review-item" style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                                        <strong>${r.reviewer_name}</strong>
+                                        <div class="star-rating" style="color:#f59e0b;">
+                                            ${Array.from({length:5}).map((_, i) => `<i class="fa-${i < r.rating ? 'solid' : 'regular'} fa-star"></i>`).join('')}
+                                        </div>
+                                    </div>
+                                    <p style="color:var(--text-muted); font-size:0.95rem; margin:0;">${r.review_text || ''}</p>
+                                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem;">
+                                        ${new Date(r.created_at).toLocaleDateString()}
+                                    </div>
+                                </div>
+                            `).join('');
+                        })
+                        .catch(e => {
+                            ratingsContainer.innerHTML = '<p class="text-muted" style="text-align:center;">Error loading reviews.</p>';
+                        });
+                }
+
+                if (!isOwnProfile) {
+                    // Track profile view
+                    fetch(`/api/user/${userId}/view`, { method: 'POST' }).catch(console.error);
+                }
+
+                // Modal Logic
+                if (isOwnProfile) {
+                    const openBtn = document.getElementById('openEditBtn');
+                    const closeBtn = document.getElementById('closeModalBtn');
+                    const cancelBtn = document.getElementById('cancelModalBtn');
+                    const overlay = document.getElementById('editModalOverlay');
+                    const form = document.getElementById('editProfileForm');
+
+                    openBtn.addEventListener('click', () => {
+                        // Pre-fill form
+                        document.getElementById('editTitle').value = user.title;
+                        document.getElementById('editDescription').value = user.description;
+                        document.getElementById('editOffers').value = user.offers.join(', ');
+                        document.getElementById('editNeeds').value = user.needs.join(', ');
+                        document.getElementById('editPortfolio').value = (user.portfolio_links || []).join(', ');
+
+                        // Set avatar preview to current avatar
+                        const avatarPreview = document.getElementById('avatarPreview');
+                        avatarPreview.src = user.avatar;
+
+                        // Reset any pending file selection
+                        document.getElementById('avatarFileInput').value = '';
+
+                        overlay.classList.add('active');
+                    });
+
+                    // Wire up avatar click → file input
+                    const avatarUploadArea = document.getElementById('avatarUploadArea');
+                    const avatarFileInput = document.getElementById('avatarFileInput');
+                    const avatarPreviewEl = document.getElementById('avatarPreview');
+
+                    avatarUploadArea.addEventListener('click', () => avatarFileInput.click());
+
+                    avatarFileInput.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            // Show instant local preview
+                            const reader = new FileReader();
+                            reader.onload = (ev) => { avatarPreviewEl.src = ev.target.result; };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    const closeModal = () => overlay.classList.remove('active');
+                    closeBtn.addEventListener('click', closeModal);
+                    cancelBtn.addEventListener('click', closeModal);
+                    overlay.addEventListener('click', (e) => {
+                        if (e.target === overlay) closeModal();
+                    });
+
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const btn = document.getElementById('saveProfileBtn');
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+                        btn.disabled = true;
+
+                        try {
+                            // Step 1: Upload new avatar if one was selected
+                            const avatarFile = document.getElementById('avatarFileInput').files[0];
+                            let newAvatarUrl = null;
+
+                            if (avatarFile) {
+                                const formData = new FormData();
+                                formData.append('avatar', avatarFile);
+
+                                const uploadRes = await fetch(`/api/upload-avatar/${user.id}`, {
+                                    method: 'POST',
+                                    body: formData
+                                });
+
+                                if (uploadRes.ok) {
+                                    const uploadData = await uploadRes.json();
+                                    newAvatarUrl = uploadData.avatar;
+                                } else {
+                                    const errData = await uploadRes.json();
+                                    alert(errData.error || 'Failed to upload photo');
+                                    btn.innerHTML = originalText;
+                                    btn.disabled = false;
+                                    return;
+                                }
+                            }
+
+                            // Step 2: Save profile text fields
+                            const updatedData = {
+                                title: document.getElementById('editTitle').value,
+                                description: document.getElementById('editDescription').value,
+                                offers: document.getElementById('editOffers').value.split(',').map(s => s.trim()).filter(s => s),
+                                needs: document.getElementById('editNeeds').value.split(',').map(s => s.trim()).filter(s => s),
+                                portfolio_links: document.getElementById('editPortfolio').value.split(',').map(s => s.trim()).filter(s => s)
+                            };
+
+                            if (newAvatarUrl) updatedData.avatar = newAvatarUrl;
+
+                            const res = await fetch(`/api/user/${user.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(updatedData)
+                            });
+
+                            if (res.ok) {
+                                window.location.reload();
+                            } else {
+                                const data = await res.json();
+                                alert(data.error || 'Failed to update profile');
+                            }
+                        } catch (err) {
+                            alert('Network error while saving profile.');
+                        } finally {
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }
+                    });
+                }
+
+            } catch (err) {
+                profileContainer.innerHTML = '<div class="glass-panel" style="padding: 3rem; text-align: center;"><h2>Error</h2><p>Could not load profile data.</p><a href="index.html" class="btn btn-primary" style="margin-top:1rem;">Go Home</a></div>';
+            }
+        });
+        // Global error handling replacement
+        window.alert = function(msg) {
+            if (typeof showToast !== 'undefined') showToast(msg, 'warning');
+            else console.log("Alert:", msg);
+        };
+    </script>
+    <div id="toast-container"></div>
+</body>
+
+</html>
